@@ -1,0 +1,71 @@
+package "gipsl"
+import "platform:/resource/runningdinnermetamodel/model/Runningdinnermetamodel.ecore"
+
+config {  
+	solver := GUROBI;
+	timeLimit := true [value := 300.0];
+	randomSeed := true [value := 0];
+	presolve := auto;
+	debugOutput := true;
+}
+
+rule assignTeamToGroup {
+	t : Team {
+		++ -group -> p
+	}
+	
+	p : Group
+}
+
+mapping teamToGroupAssignment to assignTeamToGroup;
+
+//Every Team is in exactly one group
+constraint with Team {
+	mappings.teamToGroupAssignment->filter(element.nodes.t == context)->sum(element.value) == 1
+}
+
+
+rule teamIsGuestAt {
+	t : Team {
+		++ -isGuestAt -> c
+	}
+	
+	c : Course
+}
+
+mapping guestAssignment to teamIsGuestAt;
+
+//Every Team is a guest exactly 2 times 
+constraint with Team {
+	mappings.guestAssignment->filter(element.nodes.t == context)->sum(element.value) == 2
+}
+
+rule teamHostsCourse {
+	t : Team {
+		++ -hosts -> c
+	}
+	
+	c : Course
+}
+
+mapping hostAssignment to teamHostsCourse;
+
+//Every Team is a host exactly 1 time
+constraint with Team {
+	mappings.hostAssignment->filter(element.nodes.t == context)->sum(element.value) == 1
+}
+
+
+
+function testObj with teamToGroupAssignment {
+	5 * context.value
+}
+
+objective : min {
+	functions.testObj
+}
+
+
+
+
+
