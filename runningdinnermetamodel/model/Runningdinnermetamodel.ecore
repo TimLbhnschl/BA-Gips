@@ -10,59 +10,47 @@
         eType="#//Team" containment="true"/>
     <eStructuralFeatures xsi:type="ecore:EReference" name="groups" upperBound="-1"
         eType="#//Group" containment="true"/>
+    <eStructuralFeatures xsi:type="ecore:EReference" name="Course" upperBound="-1"
+        eType="#//Course" containment="true"/>
   </eClassifiers>
   <eClassifiers xsi:type="ecore:EClass" name="Team">
-    <eStructuralFeatures xsi:type="ecore:EAttribute" name="name" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EString"/>
-    <eStructuralFeatures xsi:type="ecore:EReference" name="hosts" lowerBound="1" eType="#//Course"
-        containment="true"/>
+    <eStructuralFeatures xsi:type="ecore:EAttribute" name="name" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EInt"/>
+    <eStructuralFeatures xsi:type="ecore:EReference" name="hosts" lowerBound="1" eType="#//Course"/>
     <eStructuralFeatures xsi:type="ecore:EReference" name="isGuestAt" lowerBound="2"
         upperBound="2" eType="#//Course"/>
-    <eStructuralFeatures xsi:type="ecore:EReference" name="group" lowerBound="1" eType="#//Group"
+    <eStructuralFeatures xsi:type="ecore:EReference" name="group" lowerBound="1" eType="#//Group"/>
+    <eStructuralFeatures xsi:type="ecore:EAttribute" name="language" lowerBound="1"
+        upperBound="-1" eType="#//Language"/>
+    <eStructuralFeatures xsi:type="ecore:EAttribute" name="eatingHabit" lowerBound="1"
+        eType="#//EatingHabit"/>
+    <eStructuralFeatures xsi:type="ecore:EAttribute" name="environment" upperBound="-1"
+        eType="#//CriticalAllergies"/>
+    <eStructuralFeatures xsi:type="ecore:EAttribute" name="environmentalAllergies"
+        upperBound="-1" eType="#//CriticalAllergies"/>
+    <eStructuralFeatures xsi:type="ecore:EAttribute" name="foodAllergies" upperBound="-1"
+        eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EString"/>
+    <eStructuralFeatures xsi:type="ecore:EReference" name="way" upperBound="-1" eType="#//Way"
         containment="true"/>
-    <eStructuralFeatures xsi:type="ecore:EReference" name="foodAllergies" upperBound="-1"
-        eType="#//FoodAllergies" containment="true"/>
-    <eStructuralFeatures xsi:type="ecore:EReference" name="environment" upperBound="-1"
-        eType="#//Environment" containment="true"/>
-    <eStructuralFeatures xsi:type="ecore:EReference" name="environmentalAllergies"
-        upperBound="-1" eType="#//EnvironmentalAllergies" containment="true"/>
-    <eStructuralFeatures xsi:type="ecore:EAttribute" name="Language" upperBound="-1"
-        eType="#//Language"/>
-    <eStructuralFeatures xsi:type="ecore:EAttribute" name="eatingHabit" eType="#//EatingHabit"/>
   </eClassifiers>
   <eClassifiers xsi:type="ecore:EClass" name="Course">
-    <eStructuralFeatures xsi:type="ecore:EAttribute" name="Speise" lowerBound="1"
-        eType="#//Speise"/>
-    <eStructuralFeatures xsi:type="ecore:EAttribute" name="KitchenPosition" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EInt"/>
+    <eStructuralFeatures xsi:type="ecore:EAttribute" name="meal" lowerBound="1" eType="#//Meal"/>
+    <eStructuralFeatures xsi:type="ecore:EAttribute" name="kitchenPosition" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EString"/>
   </eClassifiers>
-  <eClassifiers xsi:type="ecore:EEnum" name="Speise">
+  <eClassifiers xsi:type="ecore:EEnum" name="Meal">
     <eLiterals name="Vorspeise"/>
     <eLiterals name="Hauptspeise" value="1"/>
     <eLiterals name="Nachspeise" value="2"/>
   </eClassifiers>
   <eClassifiers xsi:type="ecore:EClass" name="Group">
-    <eStructuralFeatures xsi:type="ecore:EAttribute" name="Name" lowerBound="1" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EString"/>
-    <eStructuralFeatures xsi:type="ecore:EAttribute" name="Size" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EInt"
+    <eStructuralFeatures xsi:type="ecore:EAttribute" name="name" lowerBound="1" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EString"/>
+    <eStructuralFeatures xsi:type="ecore:EAttribute" name="size" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EInt"
         defaultValueLiteral="9"/>
-    <eStructuralFeatures xsi:type="ecore:EReference" name="Teams" upperBound="-1"
-        eType="#//Team" containment="true"/>
-  </eClassifiers>
-  <eClassifiers xsi:type="ecore:EClass" name="FoodAllergies"/>
-  <eClassifiers xsi:type="ecore:EClass" name="Environment">
-    <eStructuralFeatures xsi:type="ecore:EAttribute" name="criticalAllergies" eType="#//CriticalAllergies"/>
-  </eClassifiers>
-  <eClassifiers xsi:type="ecore:EClass" name="EnvironmentalAllergies">
-    <eStructuralFeatures xsi:type="ecore:EAttribute" name="criticalAllergies" eType="#//CriticalAllergies"/>
+    <eStructuralFeatures xsi:type="ecore:EReference" name="teams" upperBound="-1"
+        eType="#//Team"/>
   </eClassifiers>
   <eClassifiers xsi:type="ecore:EEnum" name="Language">
     <eLiterals name="german"/>
     <eLiterals name="english" value="1"/>
-  </eClassifiers>
-  <eClassifiers xsi:type="ecore:EClass" name="Kitchen">
-    <eStructuralFeatures xsi:type="ecore:EAttribute" name="Koordinaten">
-      <eGenericType eClassifier="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EEList">
-        <eTypeArguments/>
-      </eGenericType>
-    </eStructuralFeatures>
   </eClassifiers>
   <eClassifiers xsi:type="ecore:EEnum" name="CriticalAllergies">
     <eLiterals name="Hunde"/>
@@ -70,5 +58,12 @@
   <eClassifiers xsi:type="ecore:EEnum" name="EatingHabit">
     <eLiterals name="vegan"/>
     <eLiterals name="vegetarian" value="1"/>
+    <eLiterals name="omnivore" value="2"/>
+  </eClassifiers>
+  <eClassifiers xsi:type="ecore:EClass" name="Way">
+    <eStructuralFeatures xsi:type="ecore:EReference" name="destination" lowerBound="1"
+        eType="#//Team"/>
+    <eStructuralFeatures xsi:type="ecore:EAttribute" name="distance" lowerBound="1"
+        eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EDouble"/>
   </eClassifiers>
 </ecore:EPackage>
