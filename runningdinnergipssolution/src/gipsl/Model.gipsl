@@ -7,6 +7,7 @@ config {
 	randomSeed := true [value := 0];
 	presolve := auto;
 	debugOutput := true;
+	lpOutput := true [path := "./gurobi.lp"];
 }
 
 rule assignTeamToGroup {
@@ -25,47 +26,163 @@ constraint with Team {
 }
 
 
-rule teamIsGuestAt {
+//rule teamIsGuestAt {
+//	t : Team {
+//		++ -isGuestAt -> c
+//	}
+//	
+//	h : Team {
+//		-hosts -> c
+//	}
+//	
+//	c : Course 
+//}
+//
+//mapping guestAssignment to teamIsGuestAt;
+//
+////Every Team is a guest exactly 2 times 
+//constraint with Team {
+//	mappings.guestAssignment->filter(element.nodes.t == context)->sum(element.value) == 2
+//}
+////Every Course has exactly to guests
+//constraint with Course {
+//	mappings.guestAssignment->filter(element.nodes.c == context)->sum(element.value) == 2
+//}
+
+rule courseIsStarter {
+	c : Course {
+		.meal := "Starter"
+	}
+}
+mapping courseStarterAssignment to courseIsStarter;
+
+rule courseIsMain {
+	c : Course {
+		.meal := "Main"
+	}
+}
+mapping courseMainAssignment to courseIsMain;
+
+rule courseIsDessert {
+	c : Course {
+		.meal := "Dessert"
+	}
+}
+mapping courseDessertAssignment to courseIsDessert;
+//Every Course has only one meal don't know if this is really necessary?
+constraint with Course {
+	mappings.courseStarterAssignment->filter(element.nodes.c == context)->sum(element.value)
+	+ mappings.courseMainAssignment->filter(element.nodes.c == context)->sum(element.value)
+	+ mappings.courseDessertAssignment->filter(element.nodes.c == context)->sum(element.value)
+	== 1
+}
+//number of starter == number of Main == Number of Dessert
+constraint {
+	mappings.courseStarterAssignment->sum(element.value) ==
+	mappings.courseMainAssignment->sum(element.value)
+	
+	&
+	mappings.courseStarterAssignment->sum(element.value) ==
+	mappings.courseDessertAssignment->sum(element.value)
+}
+
+//____________________________________________
+
+rule teamIsGuestAtStarter {
 	t : Team {
 		++ -isGuestAt -> c
+		-way -> w
 	}
 	
-	c : Course
+	h : Team {
+		-hosts -> c
+	}
+	
+	c : Course 
+	
+	w : Way {
+		-destination -> h
+	}
 }
 
-mapping guestAssignment to teamIsGuestAt;
+mapping guestAtStarter to teamIsGuestAtStarter;
 
-//Every Team is a guest exactly 2 times 
-constraint with Team {
-	mappings.guestAssignment->filter(element.nodes.t == context)->sum(element.value) == 2
-}
-
-rule teamHostsCourse {
+rule teamIsGuestAtMain {
 	t : Team {
-		++ -hosts -> c
+		++ -isGuestAt -> c
+		-way -> w
 	}
 	
-	c : Course
+	h : Team {
+		-hosts -> c
+	}
+	
+	c : Course 
+	
+	w : Way {
+		-destination -> h
+	}
 }
 
-mapping hostAssignment to teamHostsCourse;
+mapping guestAtMain to teamIsGuestAtMain;
 
-//Every Team is a host exactly 1 time
-constraint with Team {
-	mappings.hostAssignment->filter(element.nodes.t == context)->sum(element.value) == 1
+rule teamIsGuestAtDessert {
+	t : Team {
+		++ -isGuestAt -> c
+		-way -> w
+	}
+	
+	h : Team {
+		-hosts -> c
+	}
+	
+	c : Course 
+	
+	w : Way {
+		-destination -> h
+	}
 }
 
-
-
-function testObj with teamToGroupAssignment {
-	5 * context.value
+mapping guestAtDessert to teamIsGuestAtDessert;
+//Every Starter Course has two 
+constraint with Course { 
+	mappings.guestAtStarter->filter(element.nodes.c == context)->sum(element.value) == 
+	2 * mappings.courseStarterAssignment->filter(element.nodes.c == context)->sum(element.value)
 }
+
+constraint with Course { 
+	mappings.guestAtMain->filter(element.nodes.c == context)->sum(element.value) == 
+	2 * mappings.courseMainAssignment->filter(element.nodes.c == context)->sum(element.value)
+}
+
+constraint with Course { 
+	mappings.guestAtDessert->filter(element.nodes.c == context)->sum(element.value) == 
+	2 * mappings.courseDessertAssignment->filter(element.nodes.c == context)->sum(element.value)
+}
+//Every Team visits exactly one Starter as a guest or a host
+constraint with Team { 
+	mappings.courseStarterAssignment->filter(element.nodes.c == context.hosts)->sum(element.value) + 
+	mappings.guestAtStarter->filter(element.nodes.t == context)->sum(element.value) == 1
+}
+//Every Team visits exactly one Main as a guest or a host
+constraint with Team { 
+	mappings.courseMainAssignment->filter(element.nodes.c == context.hosts)->sum(element.value) + 
+	mappings.guestAtMain->filter(element.nodes.t == context)->sum(element.value) == 1
+}
+//Every Team visits exactly one Dessert as a guest or a host
+constraint with Team { 
+	mappings.courseDessertAssignment->filter(element.nodes.c == context.hosts)->sum(element.value) + 
+	mappings.guestAtDessert->filter(element.nodes.t == context)->sum(element.value) == 1
+}
+//____________________________________________
+
+function totalDistance with Team {
+	mappings.guestAtStarter->filter(element.nodes.t == context)->sum(element.value * element.nodes.w.distance) +
+	mappings.guestAtMain->filter(element.nodes.t == context)->sum(element.value * element.nodes.w.distance) +
+	mappings.guestAtDessert->filter(element.nodes.t == context)->sum(element.value * element.nodes.w.distance)
+}
+
 
 objective : min {
-	functions.testObj
+	functions.totalDistance
 }
-
-
-
-
-

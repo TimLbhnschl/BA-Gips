@@ -33,13 +33,14 @@
         containment="true"/>
   </eClassifiers>
   <eClassifiers xsi:type="ecore:EClass" name="Course">
-    <eStructuralFeatures xsi:type="ecore:EAttribute" name="meal" lowerBound="1" eType="#//Meal"/>
-    <eStructuralFeatures xsi:type="ecore:EAttribute" name="kitchenPosition" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EString"/>
+    <eStructuralFeatures xsi:type="ecore:EAttribute" name="meal" lowerBound="1" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EString"/>
+    <eStructuralFeatures xsi:type="ecore:EAttribute" name="name" lowerBound="1" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EInt"/>
   </eClassifiers>
   <eClassifiers xsi:type="ecore:EEnum" name="Meal">
-    <eLiterals name="Vorspeise"/>
-    <eLiterals name="Hauptspeise" value="1"/>
-    <eLiterals name="Nachspeise" value="2"/>
+    <eLiterals name="NotSet"/>
+    <eLiterals name="Starter" value="1"/>
+    <eLiterals name="Main" value="2"/>
+    <eLiterals name="Dessert" value="3"/>
   </eClassifiers>
   <eClassifiers xsi:type="ecore:EClass" name="Group">
     <eStructuralFeatures xsi:type="ecore:EAttribute" name="name" lowerBound="1" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EString"/>
