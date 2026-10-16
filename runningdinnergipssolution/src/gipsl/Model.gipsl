@@ -25,30 +25,6 @@ constraint with Team {
 	mappings.teamToGroupAssignment->filter(element.nodes.t == context)->sum(element.value) == 1
 }
 
-
-//rule teamIsGuestAt {
-//	t : Team {
-//		++ -isGuestAt -> c
-//	}
-//	
-//	h : Team {
-//		-hosts -> c
-//	}
-//	
-//	c : Course 
-//}
-//
-//mapping guestAssignment to teamIsGuestAt;
-//
-////Every Team is a guest exactly 2 times 
-//constraint with Team {
-//	mappings.guestAssignment->filter(element.nodes.t == context)->sum(element.value) == 2
-//}
-////Every Course has exactly to guests
-//constraint with Course {
-//	mappings.guestAssignment->filter(element.nodes.c == context)->sum(element.value) == 2
-//}
-
 rule courseIsStarter {
 	c : Course {
 		.meal := "Starter"
@@ -143,18 +119,21 @@ rule teamIsGuestAtDessert {
 	}
 }
 
+
 mapping guestAtDessert to teamIsGuestAtDessert;
-//Every Starter Course has two 
+
+
+//Every Starter Course has exactly two guets
 constraint with Course { 
 	mappings.guestAtStarter->filter(element.nodes.c == context)->sum(element.value) == 
 	2 * mappings.courseStarterAssignment->filter(element.nodes.c == context)->sum(element.value)
 }
-
+//Every Mian Course has exactly two guets
 constraint with Course { 
 	mappings.guestAtMain->filter(element.nodes.c == context)->sum(element.value) == 
 	2 * mappings.courseMainAssignment->filter(element.nodes.c == context)->sum(element.value)
 }
-
+//Every Dessert Course has exactly two guets
 constraint with Course { 
 	mappings.guestAtDessert->filter(element.nodes.c == context)->sum(element.value) == 
 	2 * mappings.courseDessertAssignment->filter(element.nodes.c == context)->sum(element.value)
@@ -176,10 +155,60 @@ constraint with Team {
 }
 //____________________________________________
 
+pattern guestHostPair {
+	t1 : Team
+	t2 : Team
+}
+
+
+pattern guestGuestPair {
+	t1 : Team{
+		-isGuestAt -> c
+	}
+	
+	t2 : Team{
+		-isGuestAt -> c
+	}
+	
+	c : Course
+}
+
+mapping guestGuestPairs to guestGuestPair;
+
+constraint with guestHostPair {
+	//Sum of every time two pairs meet as guest and host
+	mappings.guestAtStarter->filter(
+		element.nodes.t == context.nodes.t1 & element.nodes.h == context.nodes.t2 |
+		element.nodes.t == context.nodes.t2 & element.nodes.h == context.nodes.t1)->sum(element.value) +
+	mappings.guestAtMain->filter(
+		element.nodes.t == context.nodes.t1 & element.nodes.h == context.nodes.t2 |
+		element.nodes.t == context.nodes.t2 & element.nodes.h == context.nodes.t1)->sum(element.value) +
+	mappings.guestAtDessert->filter(
+		element.nodes.t == context.nodes.t1 & element.nodes.h == context.nodes.t2 |
+		element.nodes.t == context.nodes.t2 & element.nodes.h == context.nodes.t1)->sum(element.value) +
+	//Sum of every time two pairs meet as guests	
+	mappings.guestGuestPairs->filter(
+		element.nodes.t1 == context.nodes.t1 & 
+		element.nodes.t2 == context.nodes.t2)->sum(element.value)
+	<= 1
+}
+
+//constraint with guestGuestPair {
+//	mappings.guestAtStarter->filter(
+//		element.nodes.t == context.nodes.t1 & element.nodes.h == context.nodes.t2 & element.nodes.c == context.nodes.c)->sum(element.value) +
+//	mappings.guestAtMain->filter(
+//		element.nodes.t == context.nodes.t1 & element.nodes.h == context.nodes.t2 & element.nodes.c == context.nodes.c)->sum(element.value) +
+//	mappings.guestAtDessert->filter(
+//		element.nodes.t == context.nodes.t1 & element.nodes.h == context.nodes.t2 & element.nodes.c == context.nodes.c)->sum(element.value) 
+//	== 1
+//}
+
+
+//function to sum up every distances
 function totalDistance with Team {
-	mappings.guestAtStarter->filter(element.nodes.t == context)->sum(element.value * element.nodes.w.distance) +
-	mappings.guestAtMain->filter(element.nodes.t == context)->sum(element.value * element.nodes.w.distance) +
-	mappings.guestAtDessert->filter(element.nodes.t == context)->sum(element.value * element.nodes.w.distance)
+	mappings.guestAtStarter->filter(element.nodes.t == context)->sum(element.value * element.nodes.w.distance * 10) +
+	mappings.guestAtMain->filter(element.nodes.t == context)->sum(element.value * element.nodes.w.distance * 10) +
+	mappings.guestAtDessert->filter(element.nodes.t == context)->sum(element.value * element.nodes.w.distance * 10)
 }
 
 
