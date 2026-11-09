@@ -17,6 +17,7 @@ import org.emoflon.smartemf.persistence.SmartEMFResourceFactoryImpl;
 public class CsvToModel {
 
 	Root model = null;
+	HashMap<String, CriticalAllergie> CriticalAllergies;
 
 	public void convertCsvToModel(final String pathTeams, final String pathDistanceMatrix) {
 		try {
@@ -69,15 +70,14 @@ public class CsvToModel {
 
 				String environment = get(team, mapping, "Environment");
 				if (!environment.isBlank()) {
-					t.setEnvironment(parseEnum(CriticalAllergies.class, environment));
-					// t.getEnvironment().add(parseEnum(CriticalAllergies.class, environment));
+					createCriticalAllergie(environment);
+					t.setHasCriticalAllergiesAtHome(CriticalAllergies.get(environment));
 				}
 
 				String environmentalAllergies = get(team, mapping, "EnvironmentalAllergies");
 				if (!environmentalAllergies.isBlank()) {
-					t.setEnvironmentalAllergies(parseEnum(CriticalAllergies.class, environmentalAllergies));
-					// t.getEnvironmentalAllergies().add(parseEnum(CriticalAllergies.class,
-					// environmentalAllergies));
+					createCriticalAllergie(environmentalAllergies);
+					t.setHasCriticalAllergiesAtHome(CriticalAllergies.get(environmentalAllergies));
 				}
 
 				String foodAllergies = get(team, mapping, "FoodAllergies");
@@ -181,6 +181,16 @@ public class CsvToModel {
 		res.save(null);
 		// Thats AI
 
+	}
+	
+	public void createCriticalAllergie(String criticalAllergieName) {
+		if(!CriticalAllergies.containsKey(criticalAllergieName)) {
+			CriticalAllergie criticalAllergie = RunningdinnermetamodelFactory.eINSTANCE.createCriticalAllergie();
+			criticalAllergie.setName(criticalAllergieName);
+			CriticalAllergies.put(criticalAllergieName, criticalAllergie);
+			model.getCriticalAllergies().add(criticalAllergie);
+			
+		}
 	}
 
 	public static void main(String[] args) throws IOException {
